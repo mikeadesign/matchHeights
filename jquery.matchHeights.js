@@ -26,7 +26,6 @@
 		this.each(function() {
 			if($(this).innerHeight() > tallest) {
 				tallest = $(this).outerHeight();
-				//bdr = $(this).outerHeight() - $(this).innerHeight();
 			}
 		});
 		if((settings.maxHeight) && tallest > settings.maxHeight) tallest = settings.maxHeight;
