@@ -1,34 +1,42 @@
-/**
+/*
  * Match Heights Plugin
  * Match the heights of targeted elements
  * 
- * Version 1.2
- * Updated 12/17/2009
- * Copyright (c) 2009 Mike Avello
+ * Version 1.3
+ * Updated 4/7/2010
+ * Copyright (c) 2010 Mike Avello
  * Dual licensed under the MIT and GPL licenses:
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl.html
- 
- * Usage: $(object).matchHeights([minHeight], [maxHeight]);
- * Example 1: $(".cols").matchHeights(); Sets all objects to the same height.
- * Example 2: $(".cols").matchHeights(400); Sets all objects to at least 400px tall.
- * Example 3: $(".cols").matchHeights(100,300); at least 100 but no more than 300.
- * Example 4: $(".cols, .cols2").matchHeights();
+ *
+ * Usage: $(object).matchHeights({
+ *		minHeight: [optional],
+ *		maxHeight: [optional]
+ * });
  *
  */
-
 (function($) {
-	$.fn.matchHeights = function(minHeight, maxHeight) {
-		tallest = (minHeight) ? minHeight : 0;
+	$.fn.matchHeights = function(settings) {
+		settings = jQuery.extend(this,{
+			minHeight: null, // optional minimum height setting
+			maxHeight: null // optional maximum height setting, forced height instead of min-height
+		}, settings);
+	
+		tallest = (settings.minHeight) ? settings.minHeight : 0;
 		this.each(function() {
-			if($(this).height() > tallest) {
-				tallest = $(this).height();
+			if($(this).innerHeight() > tallest) {
+				tallest = $(this).outerHeight();
+				//bdr = $(this).outerHeight() - $(this).innerHeight();
 			}
 		});
-		if((maxHeight) && tallest > maxHeight) tallest = maxHeight;
+		if((settings.maxHeight) && tallest > settings.maxHeight) tallest = settings.maxHeight;
 		return this.each(function() {
-			extra = $(this).outerHeight() - ($(this).innerHeight() -  parseInt($(this).css("padding-top")) - parseInt($(this).css("padding-bottom")));
-			($.browser.msie && $.browser.version == 6.0) ? $(this).css({'height': tallest - extra}) : $(this).css({'min-height': tallest - extra}); 
+			extra = $(this).innerHeight() - $(this).height();
+			
+			//if ($(this).outerHeight() - $(this).innerHeight() == 0)	
+				extra = extra + ($(this).outerHeight() - $(this).innerHeight());
+			
+			($.browser.msie && $.browser.version == 6.0 || (settings.maxHeight)) ? $(this).css({'height': tallest - extra}) : $(this).css({'min-height': tallest - extra}); 
 		});
 	}
 })(jQuery);
